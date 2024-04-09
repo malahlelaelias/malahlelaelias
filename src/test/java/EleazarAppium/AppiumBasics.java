@@ -16,10 +16,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-public class AppiumBasics extends BaseTest{
+public class AppiumBasics extends BaseTest {
+
 
     @Test
     public void AppiumTest() throws MalformedURLException {
+
+
+
 
 
         //find element by xpath or accessibilityID
@@ -42,6 +46,6 @@ public class AppiumBasics extends BaseTest{
 
 
 
-        appiumServiceBuilder.build().stop();
+        //appiumServiceBuilder.build().stop();
     }
 }
