@@ -32,6 +32,18 @@ steps:
 - task: Npm@1
   inputs:
     command: 'install'
+- task: Maven@4
+  inputs:
+    mavenPomFile: 'pom.xml'
+    goals: 'clean verify'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.17'
+    mavenVersionOption: 'Default'
+    mavenAuthenticateFeed: false
+    effectivePomSkip: false
+    sonarQubeRunAnalysis: false
 - task: Bash@3
   inputs:
     targetType: 'inline'
