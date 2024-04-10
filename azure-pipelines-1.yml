@@ -14,7 +14,7 @@ steps:
 - task: NodeTool@0
   inputs:
     versionSource: 'spec'
-    versionSpec: 
+    versionSpec: '6.x'
     checkLatest: true
 - task: CmdLine@2
   inputs:
