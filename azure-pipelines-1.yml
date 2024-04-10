@@ -16,25 +16,6 @@ steps:
     versionSource: 'spec'
     versionSpec: '6.x'
     checkLatest: true
-- task: Npm@1
-  inputs:
-    command: 'install'
-- task: CmdLine@2
-  inputs:
-    script: |
-      #!/usr/bin/env bash
-      env
-      echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install 'system-images;android-25;google_apis;x86'
-      $ANDROID_HOME/platform-tools/adb devices
-      adb devices | grep "emulator-" | while read -r emulator device; do adb -s $emulator emu kill; done
-      adb kill-server
-      $ANDROID_HOME/tools/bin/avdmanager delete avd -n test_android_emulator
-      $ANDROID_HOME/platform-tools/adb devices
-      echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd -n test_android_emulator -k 'system-images;android-25;google_apis;x86' --force
-      nohup $ANDROID_HOME/emulator/emulator -memory 2500 -avd test_android_emulator -skin 768x1280 -no-snapshot > /dev/null 2>&1 & $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
-      echo "Emulator started"- task: Npm@1
-      inputs:
-      command: 'install'
 - task: Maven@4
   inputs:
     mavenPomFile: 'pom.xml'
@@ -42,7 +23,44 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.17'
     mavenVersionOption: 'Default'
     mavenAuthenticateFeed: false
     effectivePomSkip: false
     sonarQubeRunAnalysis: false
+- task: Npm@1
+  inputs:
+    command: 'install'
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: 'sudo apt update && sudo apt install android-sdk'
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      #!/usr/bin/env bash
+       
+      # Set environment variables
+      export ANDROID_HOME=/usr/lib/android-sdk
+       
+      # Install necessary Android SDK components
+      echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install 'system-images;android-25;google_apis;x86'
+       
+      # Restart adb server
+      $ANDROID_HOME/platform-tools/adb kill-server
+       
+      # Delete any existing AVDs
+      $ANDROID_HOME/tools/bin/avdmanager delete avd -n test_android_emulator
+       
+      # Create a new AVD
+      echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd -n test_android_emulator -k 'system-images;android-25;google_apis;x86' --force
+       
+      # Start the emulator
+      nohup $ANDROID_HOME/emulator/emulator -memory 2500 -avd test_android_emulator -skin 768x1280 -no-snapshot > /dev/null 2>&1 &
+       
+      # Wait for the emulator to boot
+      $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
+       
+      echo "Emulator started"
+
