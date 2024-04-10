@@ -27,7 +27,8 @@ steps:
     mavenVersionOption: 'Default'
     mavenAuthenticateFeed: false
     effectivePomSkip: false
-    sonarQubeRunAnalysis: false
+    sonarQubeRunAnalysis: false 
+    
 - task: Npm@1
   inputs:
     command: 'install'
