@@ -46,6 +46,6 @@ public class AppiumBasics extends BaseTest {
 
 
 
-        //appiumServiceBuilder.build().stop();
+        appiumServiceBuilder.build().stop();
     }
 }
